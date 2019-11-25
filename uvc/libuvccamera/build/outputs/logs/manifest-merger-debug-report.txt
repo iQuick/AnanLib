@@ -1,0 +1,37 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:1-30:12
+	package
+		ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:25:5-40
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:27:5-30
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:24:11-69
+	android:versionCode
+		ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml:26:5-28
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+uses-sdk
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		ADDED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml
+		INJECTED from D:\Works\Libs\AnanLib\uvc\libuvccamera\src\main\AndroidManifest.xml

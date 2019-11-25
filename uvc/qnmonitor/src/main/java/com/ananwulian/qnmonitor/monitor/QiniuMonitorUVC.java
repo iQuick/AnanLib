@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceView;
 
+import com.ananwulian.qnmonitor.R;
 import com.qiniu.pili.droid.streaming.StreamingManager;
 import com.qiniu.pili.droid.streaming.StreamingProfile;
 import com.qiniu.pili.droid.streaming.StreamingSessionListener;
@@ -25,7 +26,6 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import me.imli.qnmonitor.R;
 import com.ananwulian.qnmonitor.base.QiniuMonitor;
 import com.ananwulian.qnmonitor.utils.HandlerThreadHandler;
 

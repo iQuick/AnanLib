@@ -8,7 +8,6 @@ import android.hardware.usb.UsbManager;
 import android.os.Environment;
 import android.util.Log;
 
-import com.jiangdg.libusbcamera.R;
 import com.serenegiant.usb.DeviceFilter;
 import com.serenegiant.usb.Size;
 import com.serenegiant.usb.USBMonitor;
@@ -17,9 +16,9 @@ import com.serenegiant.usb.common.AbstractUVCCameraHandler;
 import com.serenegiant.usb.common.UVCCameraHandler;
 import com.serenegiant.usb.encoder.RecordParams;
 import com.serenegiant.usb.widget.CameraViewInterface;
+import com.serenegiant.uvccamera.R;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
 

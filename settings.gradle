@@ -1,3 +1,3 @@
 include ':demo'
-include ':uvc:libuvccamera', 'uvc:qnmonitor'
+include ':uvc:libuvccamera', ':uvc:qnmonitor', ':uvc:takephoto',  ':uvc:qrcode'
 rootProject.name='AnanLib'

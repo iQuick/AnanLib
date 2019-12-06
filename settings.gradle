@@ -1,3 +1,4 @@
-include ':demo'
+include ':demo', ':gpio'
 include ':uvc:libuvccamera', ':uvc:qnmonitor', ':uvc:takephoto',  ':uvc:qrcode'
+include ':common:keydown'
 rootProject.name='AnanLib'

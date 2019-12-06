@@ -1,6 +1,5 @@
 package com.ananwulian.takephoto;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.LayoutRes;

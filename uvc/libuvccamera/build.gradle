@@ -96,6 +96,6 @@ dependencies {
 	implementation "androidx.appcompat:appcompat:${appcompatVersion}"
 
 	api ("com.serenegiant:common:${commonLibVersion}") {
-		exclude module: 'support-v4'
+//		exclude module: 'support-v4'
 	}
 }

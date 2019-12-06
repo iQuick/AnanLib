@@ -1,12 +1,9 @@
 package com.ananwulian.takephoto;
 
 import android.hardware.usb.UsbDevice;
-import android.os.Environment;
-import android.util.Log;
 
 import com.serenegiant.usb.CameraDialog;
 import com.serenegiant.usb.DeviceFilter;
-import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 import com.serenegiant.usb.common.AbstractUVCCameraHandler;
@@ -14,7 +11,6 @@ import com.serenegiant.usb.common.UVCCameraHandler;
 import com.serenegiant.usb.encoder.RecordParams;
 import com.serenegiant.usb.widget.UVCCameraTextureView;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 
 public class  UVCTakePhotoActivity extends TakePhotoActivity {

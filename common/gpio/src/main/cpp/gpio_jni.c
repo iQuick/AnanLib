@@ -22,7 +22,7 @@ int gpio_fb_63 = -1;
 
 
 //led灯开关控制
-JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_lightControl
+JNIEXPORT jboolean JNICALL Java_com_ananwulian_gpio_GPIO_1V2_light
         (JNIEnv *env, jobject jobj, jint n) {
     __android_log_print(ANDROID_LOG_DEBUG, "gpio", "flashlightControl n %d", n);
 
@@ -47,7 +47,7 @@ JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_
 }
 
 //镭射灯开关控制
-JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_IRControl
+JNIEXPORT jboolean JNICALL Java_com_ananwulian_gpio_GPIO_1V2_ir
         (JNIEnv *env, jobject jobj, jint n) {
 
     __android_log_print(ANDROID_LOG_DEBUG, "gpio", "IRControl n %d", n);
@@ -76,7 +76,7 @@ JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_
 
 
 /*
-	setting GPIO mode
+	setting GPIO_V2 mode
 	gpio : gpio num
 	modem: gpio mode
 */
@@ -90,7 +90,7 @@ void set_GPIO_mode(int fd,int gpio,int mode){
 }
 
 /*
-	setting GPIO dir
+	setting GPIO_V2 dir
 	gpio : gpio num
 	dir : gpio dir 0:in or 1:out
 */
@@ -105,7 +105,7 @@ void set_GPIO_dir(int fd,int gpio,int dir){
 
 
 /*
-	setting GPIO output
+	setting GPIO_V2 output
 	gpio : gpio num
 	status : 1:High or 0:Low
 */
@@ -117,7 +117,7 @@ void set_GPIO_out(int fd,int gpio,int status){
     __android_log_print(ANDROID_LOG_DEBUG, "gpio", "set_GPIO_out gpio %d ret %d",gpio,ret);
 }
 
-JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_xy6763GpioInit
+JNIEXPORT jboolean JNICALL Java_com_ananwulian_gpio_GPIO_1V2_xy6763GpioInit
         (JNIEnv *env, jobject jobj) {
     __android_log_print(ANDROID_LOG_DEBUG, "gpio", "xy6763_gpio_init");
 
@@ -128,7 +128,7 @@ JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_
     return (jboolean) gpio_fb_63;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_xy6763setGpioDataHigh
+JNIEXPORT jboolean JNICALL Java_com_ananwulian_gpio_GPIO_1V2_xy6763setGpioDataHigh
         (JNIEnv *env, jobject jobj, jint n)
 {
 
@@ -141,7 +141,7 @@ JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_
     return 1;
 
 }
-JNIEXPORT jboolean JNICALL Java_com_blackuio_center_power_util_LightControlUtil_xy6763setGpioDataLow
+JNIEXPORT jboolean JNICALL Java_com_ananwulian_gpio_GPIO_1V2_xy6763setGpioDataLow
         (JNIEnv *env, jobject jobj, jint n){
 
     __android_log_print(ANDROID_LOG_DEBUG, "gpio", "xy6763_setgpio_low");

@@ -20,7 +20,7 @@
 
 static int fd  = -1;
 extern "C" JNIEXPORT jint JNICALL
-Java_com_blackuio_center_power_util_LightControlUtil_open(
+Java_com_ananwulian_gpio_GPIO_1V1_open(
         JNIEnv *env,
         jobject /* this */) {
     fd = open("/dev/fourleds", O_RDWR|O_NDELAY );
@@ -29,7 +29,7 @@ Java_com_blackuio_center_power_util_LightControlUtil_open(
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_blackuio_center_power_util_LightControlUtil_close(
+Java_com_ananwulian_gpio_GPIO_1V1_close(
         JNIEnv *env,
         jobject /* this */) {
     close(fd);
@@ -38,7 +38,7 @@ Java_com_blackuio_center_power_util_LightControlUtil_close(
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_blackuio_center_power_util_LightControlUtil_ioctl(
+Java_com_ananwulian_gpio_GPIO_1V1_ioctl(
         JNIEnv *env,
         jobject /* this */,
         jint cmd,

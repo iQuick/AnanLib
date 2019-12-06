@@ -12,8 +12,9 @@ import android.util.Log;
 import android.view.SurfaceView;
 
 import com.ananwulian.qnmonitor.R;
+import com.ananwulian.qnmonitor.listener.OnUVCListener;
+import com.qiniu.pili.droid.streaming.AVCodecType;
 import com.qiniu.pili.droid.streaming.StreamingManager;
-import com.qiniu.pili.droid.streaming.StreamingProfile;
 import com.qiniu.pili.droid.streaming.StreamingSessionListener;
 import com.qiniu.pili.droid.streaming.av.common.PLFourCC;
 import com.serenegiant.usb.CameraDialog;
@@ -22,7 +23,6 @@ import com.serenegiant.usb.IFrameCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -30,7 +30,6 @@ import com.ananwulian.qnmonitor.base.QiniuMonitor;
 import com.ananwulian.qnmonitor.utils.HandlerThreadHandler;
 
 public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionListener {
-
     /**
      *
      */
@@ -54,7 +53,7 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
     @Override
     protected void initMonitor() {
         super.initMonitor();
-//        this.initAudio();
+        this.initAudio();
     }
 
     @Override
@@ -62,11 +61,15 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
 
         getStreamingProfile().setPreferredVideoEncodingSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT);
 
-        mStreamingManager = new StreamingManager(getContext());
+        mStreamingManager = new StreamingManager(getContext(), AVCodecType.HW_VIDEO_YUV_AS_INPUT_WITH_HW_AUDIO_CODEC);
         mStreamingManager.prepare(getStreamingProfile());
         mStreamingManager.setStreamingSessionListener(this);
         mStreamingManager.setStreamingStateListener(this);
+    }
 
+    @Override
+    protected void initImpl() {
+        super.initImpl();
         // handler
         mWorkerHandler = HandlerThreadHandler.createHandler(getTag());
         mWorkerThreadID = mWorkerHandler.getLooper().getThread().getId();
@@ -86,19 +89,25 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         audioManager.setSpeakerphoneOn(true);
 
         final int frequency = 44100;
-        final int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+        final int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
         final int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
-        int recBufSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding)*2;
-        AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, recBufSize);
+        int minBufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+        if (minBufferSize == AudioRecord.ERROR_BAD_VALUE) {
+            Log.e(getTag(), "Invalid parameter !");
+            return;
+        }
+
+        AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize * 4);
+        audioRecord.startRecording();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                byte[] recBuf = new byte[recBufSize];
+                byte[] recBuf = new byte[minBufferSize];
                 while(true){
-                    audioRecord.read(recBuf, 0, recBufSize);
-                    mStreamingManager.inputAudioFrame(recBuf, System.nanoTime(), true);
+                    audioRecord.read(recBuf, 0, minBufferSize);
+                    mStreamingManager.inputAudioFrame(recBuf,System.nanoTime(),false);
                 }
             }
         }).start();
@@ -144,6 +153,7 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
             getStreamingProfile().setPublishUrl(publishUrl);
             getStreamingManager().pause();
             getStreamingManager().setStreamingProfile(getStreamingProfile());
+            resumeMonitor();
         } catch (Exception e) {
             Log.e(getTag(), "set publish url error:", e);
         }
@@ -168,6 +178,7 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         synchronized (lock) {
             try {
                 mStreamingManager.pause();
+                releaseUvcCamera();
                 if (getOnMonitorListener() != null) {
                     getOnMonitorListener().onMonitorStop();
                 }
@@ -235,47 +246,76 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         } catch (final IllegalArgumentException e) {
             // fallback to YUV mode
             try {
-                camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.DEFAULT_PREVIEW_MODE);
+                camera.setPreviewSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_MJPEG);
             } catch (final IllegalArgumentException e1) {
                 camera.destroy();
                 return;
             }
         }
+
         final SurfaceView sfv = mUVCCameraView;
         if (sfv != null) {
             camera.setPreviewDisplay(sfv.getHolder());
             camera.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_YUV420SP);
             camera.startPreview();
+            camera.updateCameraParams();
+            camera.setAutoWhiteBlance(true);
+            camera.setAutoFocus(true);
+
+            camera.setGain(45);
+            camera.setGamma(48);
+            camera.setBrightness(55);
+            camera.setContrast(69);
+            camera.setHue(49);
+            camera.setSaturation(35); // 设置饱和度
+            camera.setSharpness(29);
+
         }
         synchronized (mSync) {
             mUVCCamera = camera;
+            if (mOnUVCListener != null) {
+                mOnUVCListener.onOpenCamera(camera);
+            }
         }
-        startStreamingInternal();
     }
 
     /**
      * 释放 UVC 摄像头
      */
     private synchronized void releaseUvcCamera() {
-        if (mUVCCamera != null) {
-            try {
-                mUVCCamera.close();
-                mUVCCamera.destroy();
-            } catch (final Exception e) {
-                //
-                e.printStackTrace();
+        try {
+            if (mUVCCamera != null) {
+                try {
+                    mUVCCamera.close();
+                    mUVCCamera.destroy();
+                } catch (final Exception e) {
+                    //
+                    e.printStackTrace();
+                }
+                mUVCCamera = null;
             }
-            mUVCCamera = null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
+    /**
+     * 释放 USB 监听
+     */
     private synchronized void releaseUsbMonitor() {
-        if (mUSBMonitor != null) {
-            mUSBMonitor.destroy();
-            mUSBMonitor = null;
+        try {
+            if (mUSBMonitor != null) {
+                mUSBMonitor.destroy();
+                mUSBMonitor = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
+    /**
+     * CameraDialogParent
+     */
     private CameraDialog.CameraDialogParent mUVCCameraDialogParent = new CameraDialog.CameraDialogParent() {
         @Override
         public USBMonitor getUSBMonitor() {
@@ -318,30 +358,26 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
 
             int captureWidth = UVCCamera.DEFAULT_PREVIEW_WIDTH;
             int captureHeight = UVCCamera.DEFAULT_PREVIEW_HEIGHT;
-//            int captureWidth = mUVCCamera.getPreviewSize().width;
-//            int captureHeight = mUVCCamera.getPreviewSize().height;
             int rotation = 0;
             boolean mirror = false;
-            int fmt = PLFourCC.FOURCC_NV12;
+            int fmt = PLFourCC.FOURCC_NV21;
             long tsInNanoTime = System.nanoTime();
-
-//            Log.d("inputVideoFrame", "" +
-//                    "\n=================================" +
-//                    "\nyuv length : " + len +
-//                    "\ncaptureWidth : " + captureWidth +
-//                    "\ncaptureHeight : " + captureHeight +
-//                    "\nrotation : " + rotation +
-//                    "\nfmt : " + fmt +
-//                    "\ntime : " + tsInNanoTime +
-//                    "\n=================================");
 
             mStreamingManager.inputVideoFrame(yuv, captureWidth, captureHeight, rotation, mirror, fmt, tsInNanoTime);
         }
     };
 
 
+
+
+    private OnUVCListener mOnUVCListener = null;
+
+    public void setOnUVCListener(OnUVCListener onUVCListener) {
+        this.mOnUVCListener = onUVCListener;
+    }
+
     /**
-     *
+     * USB 设备监听
      */
     class OnMyDeviceConnectListener implements USBMonitor.OnDeviceConnectListener {
 

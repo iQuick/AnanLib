@@ -39,23 +39,32 @@ public class GPIO_V1 {
      * 开启灯光
      */
     public void lightOpen() {
-        light(OPEN_LIGHT);
+        light(true);
     }
 
     /**
      * 关闭灯光
      */
     public void lightClose() {
-        light(CLOSE_LIGHT);
+        light(false);
+    }
+
+
+    /**
+     * 开关led灯
+     *
+     */
+    private void light() {
+        light(!lightFlag);
     }
 
     /**
      * 开关led灯
      *
-     * @param flag
+     * @param open
      */
-    public void light(int flag) {
-        lightFlag = flag == OPEN_LIGHT;
+    private void light(boolean open) {
+        lightFlag = open;
         if (lightFlag) {
             ioctl(WHITE_LIGHT, OPEN_LIGHT);
         } else {
@@ -68,24 +77,32 @@ public class GPIO_V1 {
      * 开启镭射
      */
     public void irOpen() {
-        ir(OPEN_LIGHT);
+        ir(true);
     }
 
     /**
      * 关闭镭射
      */
     public void irClose() {
-        ir(CLOSE_LIGHT);
+        ir(false);
+    }
+
+    /**
+     * 开关镭射灯
+     *
+     */
+    public void ir() {
+        ir(!irFlag);
     }
 
 
     /**
      * 开关镭射灯
      *
-     * @param flag
+     * @param open
      */
-    public void ir(int flag) {
-        irFlag = flag == OPEN_LIGHT;
+    private void ir(boolean open) {
+        irFlag = open;
         if (irFlag) {
             ioctl(STRONG_LIGHT, OPEN_LIGHT);
         } else {

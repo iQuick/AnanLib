@@ -1,12 +1,13 @@
 package com.ananwulian.keydown;
 
 
-import android.app.Activity;
 import android.view.KeyEvent;
+
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.List;
 
-public class KeyPressActivity extends Activity {
+public class KeyPressActivity extends FragmentActivity {
 
     private final String TAG = getClass().getName();
 

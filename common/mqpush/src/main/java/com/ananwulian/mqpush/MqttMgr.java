@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.ananwulian.mqpush.service.MqttService;
 import com.ananwulian.mqpush.utils.MapLocationUtil;
 
 public class MqttMgr {

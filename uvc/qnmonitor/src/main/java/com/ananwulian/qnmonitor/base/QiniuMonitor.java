@@ -274,6 +274,7 @@ public abstract class QiniuMonitor implements IMonitor, StreamingStateChangedLis
         Log.d(getTag(), "StreamingState :" + streamingState);
         switch (streamingState) {
             case READY:
+                startStreamingInternal();
                 if (getOnMonitorListener() != null) {
                     getOnMonitorListener().onReady();
                 }

@@ -42,7 +42,7 @@ public class QiniuMonitorNormal extends QiniuMonitor implements StreamingSession
             Log.d(getTag(), "change publish url : " + publishUrl);
             setPublishUrl(publishUrl);
             getStreamingProfile().setPublishUrl(publishUrl);
-            getStreamingManager().pause();
+            getStreamingManager().stopStreaming();
             getStreamingManager().setStreamingProfile(getStreamingProfile());
             resumeMonitor();
         } catch (Exception e) {

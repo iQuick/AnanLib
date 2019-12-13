@@ -1,4 +1,4 @@
-package com.ananwulian.mqpush;
+package com.ananwulian.mqpush.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -7,6 +7,9 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.ananwulian.mqpush.MqttSetting;
+import com.ananwulian.mqpush.been.HeartBeat;
+import com.ananwulian.mqpush.receiver.MqttBroadcastReceiver;
 import com.google.gson.Gson;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -84,6 +87,7 @@ public class MqttService extends Service {
         this.mGson = new Gson();
         this.mHeartBeat = new HeartBeat();
         this.mHeartBeat.imei = clientId;
+        /// init connect
         this.initMqttClient(url, clientId);
         this.connectMqttService(username, password, topic);
     }
@@ -198,6 +202,13 @@ public class MqttService extends Service {
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
             // TODO 接收到信息，消息处理
+            if (TOPIC.equals(topic)) {
+                String data = new String(message.getPayload());
+                Intent intent = new Intent();
+                intent.setAction(MqttBroadcastReceiver.ACTION_DEF);
+                intent.putExtra("data", data);
+                sendBroadcast(intent);
+            }
         }
 
         @Override
@@ -211,6 +222,14 @@ public class MqttService extends Service {
      */
     public class MqttBinder extends Binder {
 
+        /**
+         * 启动服务
+         * @param url
+         * @param clientId
+         * @param username
+         * @param password
+         * @param topic
+         */
         public void startService(String url, String clientId, String username, String password, String topic) {
             MqttService.this.init(url, clientId, username, password, topic);
         }
@@ -248,12 +267,6 @@ public class MqttService extends Service {
          */
         public void updateElectricQuantity(int electricQuantity) {
             mHeartBeat.electricQuantity = electricQuantity;
-        }
-
-        /**
-         * 发送消息
-         */
-        public void addReceviceListener(String msg) {
         }
 
     }

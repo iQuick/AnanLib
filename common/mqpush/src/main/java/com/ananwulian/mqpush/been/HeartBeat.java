@@ -1,4 +1,4 @@
-package com.ananwulian.mqpush;
+package com.ananwulian.mqpush.been;
 
 public class HeartBeat {
 

@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -20,6 +21,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
+import java.util.Collections;
+
 public class MqttService extends Service {
 
     /**
@@ -34,6 +37,9 @@ public class MqttService extends Service {
     private String PASSWORD;
     private String TOPIC;
     private String CLIENT_ID;
+
+    // 订阅
+    private String[] mSubscribeTopic = null;
 
     // gson
     private Gson mGson;
@@ -52,6 +58,11 @@ public class MqttService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        this.mMqttBinder = new MqttBinder();
+        this.mGson = new Gson();
+        this.mHeartBeat = new HeartBeat();
+
     }
 
     @Override
@@ -83,10 +94,6 @@ public class MqttService extends Service {
         this.USERNAME = username;
         this.PASSWORD = password;
         this.TOPIC = topic;
-        this.mMqttBinder = new MqttBinder();
-        this.mGson = new Gson();
-        this.mHeartBeat = new HeartBeat();
-        this.mHeartBeat.imei = clientId;
         /// init connect
         this.initMqttClient(url, clientId);
         this.connectMqttService(username, password, topic);
@@ -134,8 +141,7 @@ public class MqttService extends Service {
         connectOptions.setWill(topic, "close".getBytes(), 2, true);
 
         try {
-            mMqttClient.connect();
-            mMqttClient.subscribe(topic);
+            mMqttClient.connect(connectOptions);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -165,6 +171,7 @@ public class MqttService extends Service {
      * @param payload   发送的内容
      */
     private void publish(String topicName, int qos, String payload) {
+        Log.d(getClass().getName(), "msg : " + payload);
         this.publish(topicName, qos, payload.getBytes());
     }
 
@@ -190,7 +197,13 @@ public class MqttService extends Service {
     }
 
     /**
+     *
+     * =============================================================================================
+     *
      * Mqtt 监听
+     *
+     * =============================================================================================
+     *
      */
     public class MyMqttCallback implements MqttCallback {
 
@@ -202,13 +215,12 @@ public class MqttService extends Service {
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
             // TODO 接收到信息，消息处理
-            if (TOPIC.equals(topic)) {
-                String data = new String(message.getPayload());
-                Intent intent = new Intent();
-                intent.setAction(MqttBroadcastReceiver.ACTION_DEF);
-                intent.putExtra("data", data);
-                sendBroadcast(intent);
-            }
+            String data = new String(message.getPayload());
+            Intent intent = new Intent();
+            intent.setAction(MqttBroadcastReceiver.ACTION_DEF);
+            intent.putExtra("data", data);
+            intent.putExtra("topic", topic);
+            sendBroadcast(intent);
         }
 
         @Override
@@ -218,7 +230,14 @@ public class MqttService extends Service {
 
 
     /**
+     *
+     *
+     * =============================================================================================
+     *
      * MqttBinder
+     *
+     * =============================================================================================
+     *
      */
     public class MqttBinder extends Binder {
 
@@ -250,6 +269,14 @@ public class MqttService extends Service {
         }
 
         /**
+         * 更新imei
+         * @param imei
+         */
+        public void updateImei(String imei) {
+            mHeartBeat.imei = imei;
+        }
+
+        /**
          * 更新定位信息
          * @param latitude
          * @param longitude
@@ -269,10 +296,33 @@ public class MqttService extends Service {
             mHeartBeat.electricQuantity = electricQuantity;
         }
 
+        /**
+         * 更新订阅
+         * @param topics
+         */
+        public void updateSubscribe(String[] topics) {
+            try {
+                if (mMqttClient != null) {
+                    int[] qos = new int[topics.length];
+                    for (int i = 0; i < qos.length; i++) {
+                        qos[i] = 2;
+                    }
+                    mMqttClient.subscribe(topics, qos);
+                }
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /**
+     *
+     * =============================================================================================
+     *
      * 心跳
+     *
+     * =============================================================================================
      */
     private class HeartBeatRunnable implements Runnable {
 
@@ -284,11 +334,11 @@ public class MqttService extends Service {
         /**
          * 间隔时间 5s
          */
-        private final int INTERVAL_TIME = 5;
+        private final int INTERVAL_TIME = 5 * 1000;
 
         @Override
         public void run() {
-            while (isStop) {
+            while (!isStop) {
                 try {
                     sleep(INTERVAL_TIME);
                     sendHeartBeatData();

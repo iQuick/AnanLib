@@ -58,8 +58,6 @@ public class MqttMgr {
         MapLocationUtil.getMapLocationUtil().init(context, new MapLocationUtil.MyLocationCall() {
             @Override
             public void setMapLocation(double latitude, double longitude, float speed, float accuracy) {
-                Log.d("======", String.format("== accuracy:%s", accuracy));
-                Log.d("======", String.format("== latitude:%s, longitude:%s, speed:%s", latitude, longitude, speed));
                 if (mMqttBinder != null) {
                     mMqttBinder.updateLocation(latitude, longitude, speed);
                 }
@@ -95,6 +93,25 @@ public class MqttMgr {
         }
     }
 
+    /**
+     * 更新 Imei
+     * @param imei
+     */
+    public void updateImei(String imei) {
+        if (mMqttBinder != null) {
+            mMqttBinder.updateImei(imei);
+        }
+    }
+
+    /**
+     * 更新订阅
+     * @param topics
+     */
+    public void updateSubscribe(String[] topics) {
+        if (mMqttBinder != null) {
+            mMqttBinder.updateSubscribe(topics);
+        }
+    }
 
     /**
      * Service 连接监听

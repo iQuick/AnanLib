@@ -62,7 +62,6 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         getStreamingProfile().setPreferredVideoEncodingSize(UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT);
 
         mStreamingManager = new StreamingManager(getContext(), AVCodecType.HW_VIDEO_YUV_AS_INPUT_WITH_HW_AUDIO_CODEC);
-        mStreamingManager.prepare(getStreamingProfile());
         mStreamingManager.setStreamingSessionListener(this);
         mStreamingManager.setStreamingStateListener(this);
     }
@@ -113,6 +112,10 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         }).start();
     }
 
+    @Override
+    public void prepare() {
+        mStreamingManager.prepare(getStreamingProfile());
+    }
 
     /**
      *

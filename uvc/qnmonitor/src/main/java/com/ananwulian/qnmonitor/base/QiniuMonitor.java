@@ -61,6 +61,7 @@ public abstract class QiniuMonitor implements IMonitor, StreamingStateChangedLis
     public QiniuMonitor(Context context, SurfaceView surfaceView) {
         this.mContext = context;
         this.mSurfaceView = surfaceView;
+        this.mStreamingProfile = new StreamingProfile();
     }
 
 
@@ -84,7 +85,6 @@ public abstract class QiniuMonitor implements IMonitor, StreamingStateChangedLis
      * 初始化 StreamingProfile
      */
     protected void initStreamingProfile() {
-        mStreamingProfile = new StreamingProfile();
         // 视频质量
         mStreamingProfile.setVideoQuality(VIDEO_QUALITY_MEDIUM2);
         // 音频质量
@@ -124,6 +124,11 @@ public abstract class QiniuMonitor implements IMonitor, StreamingStateChangedLis
         // TODO you init code write here!
     }
 
+
+    /**
+     * 解析
+     */
+    public abstract void prepare();
 
     /**
      *
@@ -169,7 +174,7 @@ public abstract class QiniuMonitor implements IMonitor, StreamingStateChangedLis
      *
      * @return
      */
-    protected StreamingProfile getStreamingProfile() {
+    public StreamingProfile getStreamingProfile() {
         return mStreamingProfile;
     }
 

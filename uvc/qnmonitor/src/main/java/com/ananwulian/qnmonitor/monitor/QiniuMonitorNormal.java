@@ -30,10 +30,14 @@ public class QiniuMonitorNormal extends QiniuMonitor implements StreamingSession
     @Override
     protected void initStreamingManager() {
         mMediaStreamingManager = new MediaStreamingManager(getContext(), getGLSurfaceView(), SW_VIDEO_WITH_SW_AUDIO_CODEC);
-        mMediaStreamingManager.prepare(getStreamingProfile());
         mMediaStreamingManager.mute(false);
         mMediaStreamingManager.setStreamingSessionListener(this);
         mMediaStreamingManager.setStreamingStateListener(this);
+    }
+
+    @Override
+    public void prepare() {
+        mMediaStreamingManager.prepare(getStreamingProfile());
     }
 
     @Override

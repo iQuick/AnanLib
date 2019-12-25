@@ -30,10 +30,14 @@ public class MqttMgr {
         return mInstance;
     }
 
+    // 是否初始化过
+    private boolean isInit = false;
     // context
     private Context mContext;
     // clientid
     private String mClientId;
+    // topic
+    private String mTopic;
     // ServiceConnection
     private ServiceConnection mServiceConnection;
     // Binder
@@ -43,11 +47,13 @@ public class MqttMgr {
      * 初始化
      * @param context
      */
-    public void init(Context context, String clientId) {
+    public void init(Context context, String clientId, String topic) {
         this.mContext = context;
         this.mClientId = clientId;
+        this.mTopic = topic;
         this.initLocation(mContext);
         this.registerElectricQuantity(context);
+        this.isInit = true;
     }
 
 
@@ -74,6 +80,14 @@ public class MqttMgr {
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         ElectricBroadCast electricBroadCast = new ElectricBroadCast();
         context.registerReceiver(electricBroadCast, intentFilter);
+    }
+
+    /**
+     * 是否初始化过
+     * @return
+     */
+    public boolean isInit() {
+        return isInit;
     }
 
     /**
@@ -121,7 +135,7 @@ public class MqttMgr {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mMqttBinder = (MqttService.MqttBinder) service;
-            mMqttBinder.startService(MqttSetting.serverURIs[0], mClientId,  MqttSetting.username, MqttSetting.password, MqttSetting.serverTopic);
+            mMqttBinder.startService(MqttSetting.serverURIs[0], mClientId,  MqttSetting.username, MqttSetting.password, mTopic);
         }
 
         @Override

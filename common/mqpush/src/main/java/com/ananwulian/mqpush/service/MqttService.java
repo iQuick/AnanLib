@@ -129,7 +129,7 @@ public class MqttService extends Service {
         // 设置Mqtt版本
         connectOptions.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
         // 设置清空Session，false表示服务器会保留客户端的连接记录，true表示每次以新的身份连接到服务器
-        connectOptions.setCleanSession(false);
+        connectOptions.setCleanSession(true);
         // 设置会话心跳时间，单位为秒
         // 客户端每隔10秒向服务端发送心跳包判断客户端是否在线
         connectOptions.setKeepAliveInterval(10);

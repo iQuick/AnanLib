@@ -43,6 +43,11 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
     private UVCCamera mUVCCamera;
     private SurfaceView mUVCCameraView;
 
+    // 音频
+    private AudioManager mAudioManager;
+    private AudioRecord mAudioRecord;
+
+
     private Handler mWorkerHandler;
     private long mWorkerThreadID = -1;
 
@@ -83,9 +88,9 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
      * 初始化声音采集
      */
     protected void initAudio() {
-        AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-        audioManager.setSpeakerphoneOn(true);
+        mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        mAudioManager.setSpeakerphoneOn(true);
 
         final int frequency = 44100;
         final int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
@@ -97,15 +102,14 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
             return;
         }
 
-        AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize * 4);
-        audioRecord.startRecording();
+        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, minBufferSize * 4);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 byte[] recBuf = new byte[minBufferSize];
                 while(true){
-                    audioRecord.read(recBuf, 0, minBufferSize);
+                    mAudioRecord.read(recBuf, 0, minBufferSize);
                     mStreamingManager.inputAudioFrame(recBuf,System.nanoTime(),false);
                 }
             }
@@ -167,6 +171,9 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         synchronized (lock) {
             try {
                 mStreamingManager.resume();
+                if (mAudioRecord != null) {
+                    mAudioRecord.startRecording();
+                }
                 if (getOnMonitorListener() != null) {
                     getOnMonitorListener().onMonitorStart();
                 }
@@ -181,6 +188,9 @@ public class QiniuMonitorUVC extends QiniuMonitor implements StreamingSessionLis
         synchronized (lock) {
             try {
                 mStreamingManager.pause();
+                if (mAudioRecord != null) {
+                    mAudioRecord.stop();
+                }
                 releaseUvcCamera();
                 if (getOnMonitorListener() != null) {
                     getOnMonitorListener().onMonitorStop();
